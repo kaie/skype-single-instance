@@ -2,8 +2,23 @@
 import dbus
 import sys
 import os
+import time
+import subprocess
+import re
 
-try:
+
+def findProcess( processId ):
+    cmd = "ps -ef | grep " + processId + " | grep -vw grep | wc -l | head -1"
+    #print "cmd: " + cmd
+    ps= subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    output = ps.stdout.read().strip()
+    #print "output: =>" + output + "<="
+    ps.stdout.close()
+    ps.wait()
+    return output
+
+def do_magic( dowhat ):
+  try:
     # Try and set skype window to normal
     remote_bus = dbus.SessionBus()
     out_connection = remote_bus.get_object('com.Skype.API', '/com/Skype')
@@ -12,6 +27,25 @@ try:
     #out_connection.Invoke('SET WINDOWSTATE MAXIMIZED')
     out_connection.Invoke('SET WINDOWSTATE NORMAL')
     out_connection.Invoke('FOCUS')
-except:
-    os.system("skype")
-    sys.exit()
+    #print "return after windowstate"
+    return
+  except:
+    if dowhat == "start-ok":
+      #print "exception, starting skype"
+      os.system("skype")
+    return
+
+if __name__ == '__main__':
+  os.putenv('LANG', 'C');
+  os.putenv('LC_ALL', 'C');
+  try:
+    is_running = findProcess('skype-single-instance');
+    if is_running == "1":
+        #print "calling do_magic()"
+        do_magic("start-ok")
+    if is_running == "2":
+        #print "calling do_magic()"
+        do_magic("")
+
+  finally:
+    #print "end of main"
