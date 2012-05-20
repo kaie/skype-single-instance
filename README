@@ -1,3 +1,13 @@
+Enhanced the script to protect against starting it multiple times,
+(e.g. if a user quickly clicked on a desktop icon to this script
+ multiple times)
+which could still lead to multipe skype instances running
+and causing the "forget password" corruption.
+
+
+prior to kaie's fork the README contents were:
+
+
 jackwizard from the skype forums wrote this script, not me. I'm
 archiving it here because it's useful and Skype's forums aren't
 permanent.
